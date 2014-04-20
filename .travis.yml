@@ -14,10 +14,19 @@ compiler:
   - gcc-4.8
   - clang-3.4
 env:
+  global:
+   - secure: "ZgO2is0XhHNwZf2bCAErKdSzr5fDAEzqeaekLlkpXS/W/Wse/zcmJY4KAHh6Heie+iXa+RulylKR3/HcXbMlj5Y3CElCLhwQ61KGqOb1GEOLLm1CQIaEaiYYoQn9FC3uFlBoCKa+X307W725fHz57fsLBq0YfAjCl/CeEkd3jLw="
   matrix:
     - USE_CAP=true
     - USE_CAP=false
     - USE_IDN=true
     - USE_IDN=false
 script: make
-
+addons:
+  coverity_scan:
+    project:
+      name: "iputils/iputils"
+      description: "The iputils package is set of small useful utilities for Linux networking."
+    notification_email: david.heidelberger@ixit.cz
+    build_command: "make"
+    branch_pattern: coverity_scan
