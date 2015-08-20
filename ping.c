@@ -129,7 +129,6 @@ static void create_socket(socket_st *sock, int family, int socktype, int protoco
 			fprintf(stderr, "ping: socket: %s (raw socket required by specified options).\n", strerror(errno));
 		else
 			fprintf(stderr, "ping: socket: %s\n", strerror(errno));
-		exit(2);
 	}
 
 	sock->socktype = socktype;
@@ -446,6 +445,23 @@ main(int argc, char **argv)
 	if (hints.ai_family != AF_INET)
 		create_socket(&sock6, AF_INET6, hints.ai_socktype, IPPROTO_ICMPV6);
 	disable_capability_raw();
+
+	/* Handle single-protocol systems */
+	switch (hints.ai_family) {
+	case AF_INET:
+		if (sock4.fd == -1)
+			exit(2);
+	case AF_INET6:
+		if (sock6.fd == -1)
+			exit(2);
+	default:
+		if (sock4.fd == -1 && sock6.fd == -1)
+			exit(2);
+		if (sock4.fd == -1)
+			hints.ai_family = AF_INET6;
+		if (sock6.fd == -1)
+			hints.ai_family = AF_INET;
+	}
 
 	/* Set socket options */
 	if (settos)
